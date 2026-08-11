@@ -4,6 +4,9 @@ import CatalogoGrid from "@/components/CatalogoGrid";
 import { leerProductos, marcasUnicas } from "@/lib/productos";
 import { NEGOCIO, REDES } from "@/lib/config";
 
+// Revalida el catálogo del Sheet cada 60s en producción (ISR).
+export const revalidate = 60;
+
 export default async function Home() {
   const productos = await leerProductos();
   const marcas = marcasUnicas(productos);

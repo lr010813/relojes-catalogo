@@ -7,6 +7,8 @@ import BotonCompra from "@/components/BotonCompra";
 import { obtenerProducto } from "@/lib/productos";
 import { NEGOCIO, REDES } from "@/lib/config";
 
+export const revalidate = 60;
+
 export default async function RelojPage({ params }: { params: { id: string } }) {
   const producto = await obtenerProducto(params.id);
   if (!producto) notFound();

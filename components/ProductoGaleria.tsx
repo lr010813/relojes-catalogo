@@ -46,7 +46,12 @@ export default function ProductoGaleria({
       <div className="border border-b-2 border-line/40 border-b-amber bg-white p-4">
         <div className="relative aspect-square overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imagenes[0]} alt={alt} className="h-full w-full object-contain" />
+          <img
+            src={imagenes[0]}
+            alt={alt}
+            referrerPolicy="no-referrer"
+            className="h-full w-full object-contain"
+          />
         </div>
       </div>
     );
@@ -66,7 +71,12 @@ export default function ProductoGaleria({
               className="relative aspect-square w-[88%] shrink-0 snap-center overflow-hidden bg-white sm:w-[92%]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={`${alt} — foto ${i + 1}`} className="h-full w-full object-contain" />
+              <img
+                src={src}
+                alt={`${alt} — foto ${i + 1}`}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-contain"
+              />
             </div>
           ))}
         </div>
