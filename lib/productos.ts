@@ -2,8 +2,9 @@ import fs from "fs";
 import path from "path";
 import Papa from "papaparse";
 
-// Único punto de acceso al catálogo. Fuente principal: Google Sheets (CSV).
-// data/productos.json es respaldo si el Sheet falla o viene mal formado.
+// Único punto de acceso al catálogo.
+// Fuente principal: Google Sheet (CSV publicado).
+// data/productos.json = respaldo si el Sheet falla.
 
 export type Genero = "Hombre" | "Mujer" | "Unisex";
 
@@ -23,9 +24,12 @@ export type Producto = {
 
 const DATA_PATH = path.join(process.cwd(), "data", "productos.json");
 
+/** URL del CSV publicado (Archivo → Compartir → Publicar en la web). */
 export const SHEETS_CSV_URL =
   process.env.SHEETS_CSV_URL ||
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGibiW8rElQnall9WIol_aYpnmtApPauboJ_Oy5ZmGENYi-tAA-_bDU-3PLJWB8b0FN5mGLp3bLHIe/pub?gid=948333778&single=true&output=csv";
+
+const REVALIDATE_SECONDS = 60;
 
 /** Último catálogo leído con éxito del Sheet (memoria del proceso). */
 let ultimoCatalogoValido: Producto[] | null = null;
@@ -41,6 +45,7 @@ type FilaSheet = {
   stock?: string;
   categoria?: string;
   genero?: string;
+  [key: string]: string | undefined;
 };
 
 function slugId(marca: string, modelo: string, index: number): string {
@@ -73,6 +78,14 @@ function parseImagenes(portada: string, extras: string): string[] {
   return Array.from(new Set(todas));
 }
 
+function normalizarHeader(header: string): string {
+  return header
+    .replace(/^\uFEFF/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+}
+
 function filaAProducto(fila: FilaSheet, index: number): Producto | null {
   const marca = (fila.marca || "").trim();
   const modelo = (fila.modelo || "").trim();
@@ -85,7 +98,7 @@ function filaAProducto(fila: FilaSheet, index: number): Producto | null {
     id: slugId(marca, modelo, index),
     marca,
     modelo,
-    precio: Number(fila.precio) || 0,
+    precio: Number(String(fila.precio || "").replace(",", ".")) || 0,
     moneda: parseMoneda(fila.moneda || "PEN"),
     descripcion: (fila.descripcion || "").trim(),
     imagen: imagen || imagenes[0] || "",
@@ -97,9 +110,17 @@ function filaAProducto(fila: FilaSheet, index: number): Producto | null {
 }
 
 function parseCsv(text: string): Producto[] {
-  const parsed = Papa.parse<FilaSheet>(text, {
+  const cleaned = text.replace(/^\uFEFF/, "").trim();
+
+  // Google a veces responde HTML de login/error en vez del CSV.
+  if (!cleaned || cleaned.startsWith("<!DOCTYPE") || cleaned.startsWith("<html")) {
+    throw new Error("La URL del Sheet no devolvió CSV (¿sigue publicado?)");
+  }
+
+  const parsed = Papa.parse<FilaSheet>(cleaned, {
     header: true,
-    skipEmptyLines: true,
+    skipEmptyLines: "greedy",
+    transformHeader: normalizarHeader,
   });
 
   if (parsed.errors.length > 0 && parsed.data.length === 0) {
@@ -122,10 +143,20 @@ function leerProductosLocal(): Producto[] {
   return JSON.parse(raw) as Producto[];
 }
 
+/** Evita la caché agresiva de Google del CSV publicado, alineado a revalidate. */
+function urlConCacheBust(base: string): string {
+  const ventana = Math.floor(Date.now() / (REVALIDATE_SECONDS * 1000));
+  const sep = base.includes("?") ? "&" : "?";
+  return `${base}${sep}_r=${ventana}`;
+}
+
 export async function leerProductos(): Promise<Producto[]> {
   try {
-    const res = await fetch(SHEETS_CSV_URL, {
-      next: { revalidate: 60 },
+    const res = await fetch(urlConCacheBust(SHEETS_CSV_URL), {
+      next: { revalidate: REVALIDATE_SECONDS },
+      headers: {
+        Accept: "text/csv,text/plain,*/*",
+      },
     });
 
     if (!res.ok) {
