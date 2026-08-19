@@ -1,9 +1,8 @@
-import Script from "next/script";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import ProductoGaleria from "@/components/ProductoGaleria";
-import BotonCompra from "@/components/BotonCompra";
+import BotonAgregarCarrito from "@/components/BotonAgregarCarrito";
 import { obtenerProducto } from "@/lib/productos";
 import { NEGOCIO, REDES } from "@/lib/config";
 
@@ -15,7 +14,6 @@ export default async function RelojPage({ params }: { params: { id: string } }) 
 
   return (
     <>
-      <Script src="https://checkout.culqi.com/js/v4" strategy="afterInteractive" />
       <Header />
 
       <main className="px-6 py-12">
@@ -57,7 +55,7 @@ export default async function RelojPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="mt-4">
-              <BotonCompra producto={producto} />
+              <BotonAgregarCarrito producto={producto} />
             </div>
           </div>
         </div>

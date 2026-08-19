@@ -1,4 +1,3 @@
-import Script from "next/script";
 import Header from "@/components/Header";
 import CatalogoGrid from "@/components/CatalogoGrid";
 import { leerProductos, marcasUnicas } from "@/lib/productos";
@@ -13,9 +12,6 @@ export default async function Home() {
 
   return (
     <>
-      {/* Script de Culqi Checkout, requerido para procesar pagos */}
-      <Script src="https://checkout.culqi.com/js/v4" strategy="afterInteractive" />
-
       <Header />
 
       {/* Catálogo de frente — sin hero */}

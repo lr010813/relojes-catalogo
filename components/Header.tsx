@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { NEGOCIO, REDES } from "@/lib/config";
+import { useCart } from "@/lib/CartContext";
 
 function useRelojEnVivo() {
   const [hora, setHora] = useState("");
@@ -26,10 +27,10 @@ function useRelojEnVivo() {
 
 export default function Header() {
   const hora = useRelojEnVivo();
+  const { cantidadTotal, abrirCarrito } = useCart();
 
   return (
     <header className="sticky top-0 z-40 border-b-2 border-amber bg-paper/95 backdrop-blur">
-      {/* Barra superior: hora en vivo como firma de marca */}
       <div className="flex items-center justify-between border-b border-line/40 px-6 py-1.5 font-mono text-[10px] uppercase tracking-widest2 text-taupe">
         <span>Lima, Perú</span>
         <span>{hora || "--:--:--"}</span>
@@ -74,6 +75,19 @@ export default function Header() {
           >
             <IconTikTok />
           </a>
+          <button
+            type="button"
+            onClick={abrirCarrito}
+            aria-label="Abrir carrito"
+            className="relative text-taupe transition hover:text-amber"
+          >
+            <IconCarrito />
+            {cantidadTotal > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center bg-amber px-1 font-mono text-[9px] leading-none text-paper">
+                {cantidadTotal}
+              </span>
+            )}
+          </button>
           <a
             href={REDES.whatsapp}
             target="_blank"
@@ -87,6 +101,15 @@ export default function Header() {
   );
 }
 
+function IconCarrito() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M6 7h15l-1.4 8.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.6L5 4H2" />
+      <circle cx="9" cy="20" r="1.2" />
+      <circle cx="18" cy="20" r="1.2" />
+    </svg>
+  );
+}
 function IconInstagram() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

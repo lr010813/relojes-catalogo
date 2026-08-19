@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Producto } from "@/lib/productos";
-import BotonCompra from "./BotonCompra";
+import BotonAgregarCarrito from "./BotonAgregarCarrito";
 
 function formatoPrecio(producto: Producto) {
   const monto = Number(producto.precio);
@@ -55,7 +55,7 @@ export default function ProductoCard({ producto }: { producto: Producto }) {
         </div>
 
         <div className="mt-4">
-          <BotonCompra producto={producto} />
+          <BotonAgregarCarrito producto={producto} />
         </div>
       </div>
     </article>
