@@ -15,7 +15,7 @@ export const LEGAL = {
   ruc: "20614922282",
   nombreComercial: "MERIDIANO",
   // Confirmar antes de publicar / aprobar Culqi.
-  direccion: "[Dirección fiscal pendiente de confirmar]",
+  direccion: "Calle Bolognesi 180, Oficina 502, Miraflores, Lima, Perú",
 };
 
 export const REDES = {
