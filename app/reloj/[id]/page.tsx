@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import ProductoGaleria from "@/components/ProductoGaleria";
 import BotonAgregarCarrito from "@/components/BotonAgregarCarrito";
 import { obtenerProducto } from "@/lib/productos";
-import { NEGOCIO, REDES } from "@/lib/config";
 
 export const revalidate = 60;
 
@@ -60,23 +59,6 @@ export default async function RelojPage({ params }: { params: { id: string } }) 
           </div>
         </div>
       </main>
-
-      <footer className="border-t-2 border-amber px-6 py-10 text-center text-xs text-taupe">
-        <p>
-          {NEGOCIO.nombre} · {NEGOCIO.email}
-        </p>
-        <p className="mt-2">
-          <a href={REDES.instagram} target="_blank" className="mx-2 hover:text-amber">
-            Instagram
-          </a>
-          <a href={REDES.facebook} target="_blank" className="mx-2 hover:text-amber">
-            Facebook
-          </a>
-          <a href={REDES.tiktok} target="_blank" className="mx-2 hover:text-amber">
-            TikTok
-          </a>
-        </p>
-      </footer>
     </>
   );
 }

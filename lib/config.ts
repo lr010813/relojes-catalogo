@@ -9,6 +9,15 @@ export const NEGOCIO = {
   email: "contacto@tudominio.com",
 };
 
+/** Datos legales del establecimiento (libro de reclamaciones y páginas Culqi). */
+export const LEGAL = {
+  razonSocial: "PAY GESTION SAC",
+  ruc: "20614922282",
+  nombreComercial: "MERIDIANO",
+  // Confirmar antes de publicar / aprobar Culqi.
+  direccion: "[Dirección fiscal pendiente de confirmar]",
+};
+
 export const REDES = {
   instagram: "https://instagram.com/tuusuario",
   facebook: "https://facebook.com/tuusuario",

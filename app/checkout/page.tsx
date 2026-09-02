@@ -1,15 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import BotonCulqi from "@/components/BotonCulqi";
 import { useCart } from "@/lib/CartContext";
 import { formatoMoneda } from "@/lib/cart";
-import { NEGOCIO, REDES } from "@/lib/config";
 
 export default function CheckoutPage() {
-  const { items, total } = useCart();
+  const { items, total, listo, cerrarCarrito } = useCart();
   const moneda = items[0]?.moneda || "PEN";
+
+  useEffect(() => {
+    cerrarCarrito();
+  }, [cerrarCarrito]);
 
   return (
     <>
@@ -26,7 +30,11 @@ export default function CheckoutPage() {
           <h1 className="mt-6 font-display text-4xl font-medium tracking-tight text-ink">Checkout</h1>
           <p className="mt-2 text-sm text-taupe">Resumen de tu pedido. El pago se procesa con Culqi.</p>
 
-          {items.length === 0 ? (
+          {!listo ? (
+            <p className="mt-10 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+              Cargando pedido…
+            </p>
+          ) : items.length === 0 ? (
             <div className="mt-10 border border-line/40 bg-panel p-8 text-center">
               <p className="font-display text-xl text-ink">Tu carrito está vacío</p>
               <Link
@@ -69,22 +77,6 @@ export default function CheckoutPage() {
           )}
         </div>
       </main>
-      <footer className="border-t-2 border-amber px-6 py-10 text-center text-xs text-taupe">
-        <p>
-          {NEGOCIO.nombre} · {NEGOCIO.email}
-        </p>
-        <p className="mt-2">
-          <a href={REDES.instagram} target="_blank" className="mx-2 hover:text-amber">
-            Instagram
-          </a>
-          <a href={REDES.facebook} target="_blank" className="mx-2 hover:text-amber">
-            Facebook
-          </a>
-          <a href={REDES.tiktok} target="_blank" className="mx-2 hover:text-amber">
-            TikTok
-          </a>
-        </p>
-      </footer>
     </>
   );
 }

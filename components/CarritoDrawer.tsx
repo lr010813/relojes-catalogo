@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
 import { formatoMoneda } from "@/lib/cart";
 
 export default function CarritoDrawer() {
-  const router = useRouter();
   const { items, abierto, cerrarCarrito, removeItem, updateQuantity, total, cantidadTotal } =
     useCart();
 
@@ -125,16 +123,12 @@ export default function CarritoDrawer() {
                 </span>
                 <span className="font-mono text-lg text-amber">{formatoMoneda(total)}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  router.push("/checkout");
-                  cerrarCarrito();
-                }}
+              <Link
+                href="/checkout"
                 className="mt-4 block w-full border border-amber bg-amber py-2.5 text-center text-[11px] uppercase tracking-widest2 text-paper transition hover:bg-amberLight"
               >
                 Proceder al pago
-              </button>
+              </Link>
             </div>
           </>
         )}

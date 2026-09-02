@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CULQI_PUBLIC_KEY, NEGOCIO } from "@/lib/config";
 import { useCart } from "@/lib/CartContext";
-import { formatoMoneda } from "@/lib/cart";
+import { formatoMoneda, ULTIMO_PEDIDO_KEY } from "@/lib/cart";
 
 declare global {
   interface Window {
@@ -13,11 +14,11 @@ declare global {
 }
 
 export default function BotonCulqi() {
+  const router = useRouter();
   const { items, total, clearCart } = useCart();
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const moneda = items[0]?.moneda || "PEN";
-  const descripcion = items.map((item) => `${item.cantidad}× ${item.marca} ${item.modelo}`).join(", ");
 
   const pagar = () => {
     if (!CULQI_PUBLIC_KEY) {
@@ -30,13 +31,16 @@ export default function BotonCulqi() {
       return;
     }
 
+    const lineas = items.map((item) => ({ id: item.id, cantidad: item.cantidad }));
+    const montoCentimos = Math.round(total * 100);
+
     setCargando(true);
     setMensaje(null);
     window.Culqi.publicKey = CULQI_PUBLIC_KEY;
     window.Culqi.settings({
       title: NEGOCIO.nombre,
       currency: moneda,
-      amount: Math.round(total * 100),
+      amount: montoCentimos,
     });
     window.culqi = async function () {
       if (window.Culqi.token) {
@@ -44,20 +48,28 @@ export default function BotonCulqi() {
         const res = await fetch("/api/pagar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token,
-            monto: Math.round(total * 100),
-            moneda,
-            producto: descripcion,
-          }),
+          body: JSON.stringify({ token, items: lineas }),
         });
         const data = await res.json();
         if (data.ok) {
-          setMensaje("¡Pago exitoso! Te contactaremos para coordinar la entrega.");
+          try {
+            window.sessionStorage.setItem(
+              ULTIMO_PEDIDO_KEY,
+              JSON.stringify({
+                lineas: data.pedido.lineas,
+                total: data.pedido.total,
+                moneda: data.pedido.moneda,
+                cargoId: data.cargoId,
+              })
+            );
+          } catch {
+            /* sessionStorage puede fallar en modo privado estricto */
+          }
           clearCart();
-        } else {
-          setMensaje("No se pudo procesar el pago: " + (data.error || "intenta de nuevo."));
+          router.push("/pedido/confirmado");
+          return;
         }
+        setMensaje("No se pudo procesar el pago: " + (data.error || "intenta de nuevo."));
       } else if (window.Culqi.error) {
         setMensaje("Pago cancelado o rechazado.");
       }

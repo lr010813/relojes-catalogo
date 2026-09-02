@@ -12,6 +12,7 @@ export type CartItem = {
 };
 
 export const CART_STORAGE_KEY = "meridiano-carrito";
+export const ULTIMO_PEDIDO_KEY = "meridiano-ultimo-pedido";
 
 export function productoACartItem(producto: Producto, cantidad = 1): CartItem {
   return {

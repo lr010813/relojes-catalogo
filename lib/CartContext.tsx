@@ -26,6 +26,7 @@ type CartContextValue = {
   clearCart: () => void;
   total: number;
   cantidadTotal: number;
+  listo: boolean;
   abierto: boolean;
   abrirCarrito: () => void;
   cerrarCarrito: () => void;
@@ -120,6 +121,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
+  const abrirCarrito = useCallback(() => setAbierto(true), []);
+  const cerrarCarrito = useCallback(() => setAbierto(false), []);
 
   const value = useMemo<CartContextValue>(
     () => ({
@@ -130,12 +133,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clearCart,
       total: subtotal(items),
       cantidadTotal: totalArticulos(items),
+      listo,
       abierto,
-      abrirCarrito: () => setAbierto(true),
-      cerrarCarrito: () => setAbierto(false),
+      abrirCarrito,
+      cerrarCarrito,
       toast,
     }),
-    [items, addItem, removeItem, updateQuantity, clearCart, abierto, toast]
+    [items, addItem, removeItem, updateQuantity, clearCart, listo, abierto, abrirCarrito, cerrarCarrito, toast]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

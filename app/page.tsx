@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import CatalogoGrid from "@/components/CatalogoGrid";
 import { leerProductos, marcasUnicas } from "@/lib/productos";
-import { NEGOCIO, REDES } from "@/lib/config";
 
 // Revalida el catálogo del Sheet cada 60s en producción (ISR).
 export const revalidate = 60;
@@ -20,23 +19,6 @@ export default async function Home() {
           <CatalogoGrid productos={productos} marcas={marcas} />
         </div>
       </section>
-
-      <footer className="border-t-2 border-amber px-6 py-10 text-center text-xs text-taupe">
-        <p>
-          {NEGOCIO.nombre} · {NEGOCIO.email}
-        </p>
-        <p className="mt-2">
-          <a href={REDES.instagram} target="_blank" className="mx-2 hover:text-amber">
-            Instagram
-          </a>
-          <a href={REDES.facebook} target="_blank" className="mx-2 hover:text-amber">
-            Facebook
-          </a>
-          <a href={REDES.tiktok} target="_blank" className="mx-2 hover:text-amber">
-            TikTok
-          </a>
-        </p>
-      </footer>
     </>
   );
 }
